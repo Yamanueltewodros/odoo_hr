@@ -105,6 +105,10 @@
                             string="Mark Decision as Served" class="btn-primary"
                             invisible="state != 'decision' or not decision_date or decision_served"/>
 
+                    <button name="action_generate_decision_letter" type="object"
+                            string="Generate Decision Letter" class="btn-info"
+                            invisible="state not in ('decision','appeal','closed') or not decision_date"/>
+
                     <button name="action_close_case" type="object"
                             string="Close Case"
                             invisible="state not in ('decision','appeal') or not decision_served"/>
@@ -348,6 +352,7 @@
 
                         </page>
 
+                        <!-- Letter download area inside Decision tab -->
                         <!-- TAB 6: Appeals -->
                         <page string="Appeals"
                               invisible="state not in ('appeal','closed')">

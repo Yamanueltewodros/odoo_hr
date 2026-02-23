@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_hr_exit_interview_list" model="ir.ui.view">
+            <field name="name">hr.exit.interview.list</field>
+            <field name="model">hr.exit.interview</field>
+            <field name="arch" type="xml">
+                <list string="Exit Interviews">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="interview_date"/>
+                    <field name="exit_reason"/>
+                    <field name="interviewer_id"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_hr_exit_interview_form" model="ir.ui.view">
+            <field name="name">hr.exit.interview.form</field>
+            <field name="model">hr.exit.interview</field>
+            <field name="arch" type="xml">
+                <form string="Exit Interview">
+                    <header>
+                        <button name="action_confirm" string="Confirm"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"/>
+                        <button name="action_done" string="Mark as Done"
+                                type="object" class="btn-primary"
+                                invisible="state != 'confirmed'"/>
+                        <button name="action_reset_draft" string="Reset to Draft"
+                                type="object"
+                                invisible="state == 'draft'"
+                                groups="hr.group_hr_manager"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,confirmed,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Employee Details">
+                                <field name="employee_id"/>
+                                <field name="department_id" readonly="1"/>
+                                <field name="resignation_id"/>
+                            </group>
+                            <group string="Interview Details">
+                                <field name="interview_date"/>
+                                <field name="interviewer_id"/>
+                                <field name="exit_reason"/>
+                                <field name="would_rehire" groups="hr.group_hr_manager"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Ratings">
+                                <group>
+                                    <group string="Employee Ratings">
+                                        <field name="work_environment_rating"/>
+                                        <field name="management_rating"/>
+                                        <field name="compensation_rating"/>
+                                        <field name="growth_rating"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Feedback">
+                                <field name="feedback" placeholder="Employee feedback on work environment..."/>
+                            </page>
+                            <page string="Recommendations">
+                                <field name="recommendation" placeholder="Employee recommendations for improvement..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_hr_exit_interview_search" model="ir.ui.view">
+            <field name="name">hr.exit.interview.search</field>
+            <field name="model">hr.exit.interview</field>
+            <field name="arch" type="xml">
+                <search string="Search Exit Interviews">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Confirmed" name="confirmed" domain="[('state','=','confirmed')]"/>
+                    <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Exit Reason" name="exit_reason" context="{'group_by': 'exit_reason'}"/>
+                        <filter string="Status" name="state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Inherit resignation form -->
+        <record id="hr_resignation_form_exit_interview" model="ir.ui.view">
+            <field name="name">hr.resignation.form.exit.interview</field>
+            <field name="model">hr.resignation</field>
+            <field name="inherit_id" ref="hr_resignation.hr_resignation_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div[@class='oe_title']" position="before">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_exit_interview"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-comments"
+                                groups="hr.group_hr_manager">
+                            <field name="exit_interview_count"
+                                   widget="statinfo"
+                                   string="Exit Interview"/>
+                        </button>
+                    </div>
+                </xpath>
+
+                <button name="action_approve_resignation" position="before">
+                    <button name="action_create_exit_interview"
+                            string="Create Exit Interview"
+                            type="object"
+                            class="btn-secondary"
+                            groups="hr.group_hr_manager"
+                            invisible="exit_interview_count != 0 or state != 'confirm'"/>
+                </button>
+
+                <field name="reason" position="after">
+                    <field name="exit_interview_state" readonly="1"
+                           invisible="exit_interview_count == 0"
+                           groups="hr.group_hr_manager"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_hr_exit_interview" model="ir.actions.act_window">
+            <field name="name">Exit Interviews</field>
+            <field name="res_model">hr.exit.interview</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">No exit interviews yet</p>
+                <p>Exit interviews are created from resignation requests.</p>
+            </field>
+        </record>
+
+        <!-- Menu under Resignation app -->
+        <menuitem id="menu_hr_exit_interview"
+                  name="Exit Interviews"
+                  parent="hr_resignation.hr_resignation_menu_root"
+                  action="action_hr_exit_interview"
+                  sequence="10"
+                  groups="hr.group_hr_manager"/>
+
+    </data>
+</odoo>

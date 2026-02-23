@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="hr_resignation_view_list" model="ir.ui.view">
+            <field name="name">hr.resignation.view.list</field>
+            <field name="model">hr.resignation</field>
+            <field name="arch" type="xml">
+                <list string="Employee Resignation">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="employee_contract"/>
+                    <field name="joined_date"/>
+                    <field name="expected_revealing_date"/>
+                    <field name="approved_revealing_date" groups="hr_resignation.group_hr_resignation_manager"/>
+                    <field name="resignation_type" groups="hr_resignation.group_hr_resignation_manager"/>
+                    <field name="notice_period"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="hr_resignation_view_form" model="ir.ui.view">
+            <field name="name">hr.resignation.view.form</field>
+            <field name="model">hr.resignation</field>
+            <field name="arch" type="xml">
+                <form string="Employee Resignation">
+                    <header>
+                        <button string="Confirm" type="object" name="action_confirm_resignation"
+                                invisible="state != 'draft'" class="btn-primary"/>
+                        <button string="Cancel" type="object" name="action_cancel_resignation"
+                                invisible="state != 'draft'"/>
+                        <button string="Approve" type="object" name="action_approve_resignation"
+                                groups="hr_resignation.group_hr_resignation_manager"
+                                invisible="state != 'confirm'" class="btn-primary"/>
+                        <button string="Set to Draft" type="object" name="action_reset_to_draft"
+                                groups="hr_resignation.group_hr_resignation_manager"
+                                invisible="state != 'approved'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Resignation Reference"/></h1>
+                        </div>
+                        <group>
+                            <group string="Employee Details">
+                                <field name="employee_id"/>
+                                <field name="department_id" readonly="1"/>
+                                <field name="employee_contract" readonly="1"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="joined_date"/>
+                                <field name="expected_revealing_date"/>
+                                <field name="approved_revealing_date" readonly="1"
+                                       groups="hr_resignation.group_hr_resignation_manager"/>
+                                <field name="notice_period" readonly="1"/>
+                            </group>
+                            <group string="Resignation Details">
+                                <field name="resignation_type"
+                                       groups="hr_resignation.group_hr_resignation_manager"/>
+                                <field name="reason" widget="textarea"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_resignation_view_search" model="ir.ui.view">
+            <field name="name">hr.resignation.view.search</field>
+            <field name="model">hr.resignation</field>
+            <field name="arch" type="xml">
+                <search string="Search Resignation">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="state"/>
+                    <filter string="My Resignations" name="my_resignations"
+                            domain="[('employee_id.user_id', '=', uid)]"/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirm')]"/>
+                    <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="department" context="{'group_by': 'department_id'}"/>
+                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Resignation Type" name="type" context="{'group_by': 'resignation_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="hr_resignation_view_kanban" model="ir.ui.view">
+            <field name="name">hr.resignation.view.kanban</field>
+            <field name="model">hr.resignation</field>
+            <field name="arch" type="xml">
+                <kanban class="o_hr_kanban">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="state"/>
+                    <field name="expected_revealing_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_details">
+                                        <strong><field name="employee_id"/></strong>
+                                        <div>Ref: <field name="name"/></div>
+                                        <div t-if="record.expected_revealing_date.raw_value">
+                                            Expected: <field name="expected_revealing_date"/>
+                                        </div>
+                                        <div class="o_kanban_record_status">
+                                            <field name="state" widget="badge"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="hr_resignation_action" model="ir.actions.act_window">
+            <field name="name">Resignation Requests</field>
+            <field name="res_model">hr.resignation</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Submit your first resignation request</p>
+                <p>Create resignation requests for employees leaving the company.</p>
+            </field>
+        </record>
+
+        <record id="hr_resignation_approved_action" model="ir.actions.act_window">
+            <field name="name">Approved Resignations</field>
+            <field name="res_model">hr.resignation</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('state', '=', 'approved')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">No approved resignations yet</p>
+            </field>
+        </record>
+
+        <!-- Menus -->
+        <menuitem id="hr_resignation_menu_root"
+                  name="Resignation"
+                  sequence="21"/>
+
+        <menuitem id="hr_resignation_menu_request"
+                  parent="hr_resignation_menu_root"
+                  name="My Resignation"
+                  action="hr_resignation_action"
+                  sequence="4"
+                  groups="hr_resignation.group_hr_resignation_employee"/>
+
+        <menuitem id="hr_resignation_menu_approved"
+                  parent="hr_resignation_menu_root"
+                  name="All Resignations"
+                  action="hr_resignation_action"
+                  sequence="8"
+                  groups="hr_resignation.group_hr_resignation_manager"/>
+
+    </data>
+</odoo>

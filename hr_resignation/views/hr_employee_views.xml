@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!--Extends the 'hr.employee' form view to include the 'resign_date' field-->
-    <record id="view_employee_form" model="ir.ui.view">
+    <!-- Extends the 'hr.employee' form view to include the 'resign_date' field -->
+    <record id="view_employee_form_inherit_resignation" model="ir.ui.view">
         <field name="name">hr.employee.view.form.inherit.hr.resignation</field>
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <field name="joining_date" position="after">
-                <field name="resign_date" invisible="active != False"/>
+            <!-- Use 'work_email' instead of 'joining_date' to avoid dependency -->
+            <field name="work_email" position="after">
+                <field name="resign_date" readonly="1"/>
+                <field name="resigned" invisible="1"/>
+                <field name="fired" invisible="1"/>
             </field>
         </field>
     </record>
-    <!-- Extends the 'hr.employee' search view to include filters for resigned and fired employees.-->
+
+    <!-- Extends the 'hr.employee' search view to include filters for resigned and fired employees -->
     <record id="view_employee_filter" model="ir.ui.view">
         <field name="name">hr.employee.view.search.inherit.hr.resignation</field>
         <field name="model">hr.employee</field>

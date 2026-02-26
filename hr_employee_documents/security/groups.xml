@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Employee Group:
+            - Every internal user auto-gets this via base.group_user implication
+            - Can see their own documents only (enforced by record rule)
+            - Read only
+        -->
+        <record id="group_hr_document_employee" model="res.groups">
+            <field name="name">HR Documents: Employee</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!--
+            Officer Group:
+            - Can create and edit documents for all employees
+            - Cannot delete
+            - Implies employee group
+        -->
+        <record id="group_hr_document_officer" model="res.groups">
+            <field name="name">HR Documents: Officer</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[
+                (4, ref('hr_employee_documents.group_hr_document_employee')),
+                (4, ref('hr.group_hr_user')),
+            ]"/>
+        </record>
+
+        <!--
+            Manager Group:
+            - Full access: create, edit, delete all documents
+            - Implies officer and HR manager
+        -->
+        <record id="group_hr_document_manager" model="res.groups">
+            <field name="name">HR Documents: Manager</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[
+                (4, ref('hr_employee_documents.group_hr_document_officer')),
+                (4, ref('hr.group_hr_manager')),
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api
+
+RATING = [
+    ('1', '1 - Poor'),
+    ('2', '2 - Fair'),
+    ('3', '3 - Average'),
+    ('4', '4 - Good'),
+    ('5', '5 - Excellent'),
+]
 
 
 class HrExitInterview(models.Model):
@@ -14,8 +21,7 @@ class HrExitInterview(models.Model):
         readonly=True, default="New"
     )
     employee_id = fields.Many2one(
-        'hr.employee', string="Employee",
-        required=True, ondelete='cascade', tracking=True
+        'hr.employee', string="Employee", required=True
     )
     department_id = fields.Many2one(
         'hr.department', string="Department",
@@ -23,13 +29,11 @@ class HrExitInterview(models.Model):
     )
     resignation_id = fields.Many2one(
         'hr.resignation', string="Related Resignation",
-        domain="[('employee_id', '=', employee_id)]",
-        tracking=True
+        domain="[('employee_id','=',employee_id)]"
     )
     interview_date = fields.Date(
-        string="Interview Date",
-        default=fields.Date.today,
-        required=True, tracking=True
+        string="Interview Date", required=True,
+        default=fields.Date.today
     )
     interviewer_id = fields.Many2one(
         'hr.employee', string="Interviewer",
@@ -41,59 +45,43 @@ class HrExitInterview(models.Model):
         ('contract_end', 'End of Contract'),
         ('retirement', 'Retirement'),
         ('other', 'Other'),
-    ], string="Reason for Leaving", required=True, tracking=True)
+    ], string="Reason for Leaving")
 
-    # Ratings
-    work_environment_rating = fields.Selection([
-        ('1', 'Very Poor'), ('2', 'Poor'), ('3', 'Average'),
-        ('4', 'Good'), ('5', 'Excellent'),
-    ], string="Work Environment Rating")
-    management_rating = fields.Selection([
-        ('1', 'Very Poor'), ('2', 'Poor'), ('3', 'Average'),
-        ('4', 'Good'), ('5', 'Excellent'),
-    ], string="Management Rating")
-    compensation_rating = fields.Selection([
-        ('1', 'Very Poor'), ('2', 'Poor'), ('3', 'Average'),
-        ('4', 'Good'), ('5', 'Excellent'),
-    ], string="Compensation Rating")
-    growth_rating = fields.Selection([
-        ('1', 'Very Poor'), ('2', 'Poor'), ('3', 'Average'),
-        ('4', 'Good'), ('5', 'Excellent'),
-    ], string="Growth Opportunities Rating")
+    would_rehire = fields.Boolean(string="Would Rehire?")
 
-    feedback = fields.Text(string="Feedback on Work Environment")
-    recommendation = fields.Text(string="Recommendations for Improvement")
-    would_rehire = fields.Selection([
-        ('yes', 'Yes'), ('no', 'No'), ('maybe', 'Maybe'),
-    ], string="Would You Rehire This Employee?")
+    work_environment_rating = fields.Selection(
+        RATING, string="Work Environment Rating"
+    )
+    management_rating = fields.Selection(
+        RATING, string="Management Rating"
+    )
+    compensation_rating = fields.Selection(
+        RATING, string="Compensation Rating"
+    )
+    growth_rating = fields.Selection(
+        RATING, string="Growth Opportunities Rating"
+    )
+
+    feedback = fields.Text(string="General Feedback")
+    recommendation = fields.Text(string="Recommendations")
 
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('done', 'Done'),
-    ], default='draft', string="Status", tracking=True)
+    ], string="Status", default='draft', tracking=True)
 
-    company_id = fields.Many2one(
-        'res.company', default=lambda self: self.env.company
-    )
-
-    # -------------------------------------------------------------------------
-    # Overrides
-    # -------------------------------------------------------------------------
     @api.model
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('hr.exit.interview') or 'New'
         return super().create(vals)
 
-    # -------------------------------------------------------------------------
-    # Button actions
-    # -------------------------------------------------------------------------
     def action_confirm(self):
-        self.write({'state': 'confirmed'})
+        self.state = 'confirmed'
 
     def action_done(self):
-        self.write({'state': 'done'})
+        self.state = 'done'
 
     def action_reset_draft(self):
-        self.write({'state': 'draft'})
+        self.state = 'draft'

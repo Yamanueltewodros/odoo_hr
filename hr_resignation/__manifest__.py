@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 {
-    'name': 'Open HRMS Resignation',
+    'name': 'HR Resignation',
     'version': '18.0.1.0.0',
     'category': 'Human Resources',
     'summary': 'Manages the resignation process of employees',
@@ -9,18 +8,16 @@
         'hr',
         'mail',
         'hr_contract',
-        'hr_employee_updation',
+        # REMOVE 'hr_exit_interview' here!
     ],
-    'data': [
-        'security/groups.xml',
-        'security/ir.model.access.csv',
-        'security/security.xml',
-        'data/ir_sequence_data.xml',
-        'data/ir_cron_data.xml',
-        'views/hr_employee_views.xml',
-        'views/hr_resignation_views.xml',
-    ],
-    'images': ['static/description/banner.jpg'],
+   'data': [
+    'security/groups.xml',
+    'security/ir.model.access.csv',
+    'security/record_rules.xml',        # ← add this
+    'data/ir_sequence_data.xml',
+    'views/hr_employee_views.xml',
+    'views/hr_resignation_views.xml',
+],
     'installable': True,
     'application': True,
     'auto_install': False,

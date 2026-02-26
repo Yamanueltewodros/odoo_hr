@@ -1,3 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_exit_interview_user,exit.interview.user,model_hr_exit_interview,hr.group_hr_user,1,1,1,0
-access_hr_exit_interview_manager,exit.interview.manager,model_hr_exit_interview,hr.group_hr_manager,1,1,1,1
+access_hr_exit_interview_manager,exit.interview.manager,hr_exit_interview.model_hr_exit_interview,hr_exit_interview.group_hr_exit_interview_manager,1,1,1,1

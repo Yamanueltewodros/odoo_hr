@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data>
+
         <record id="group_hr_exit_interview_manager" model="res.groups">
-            <field name="name">Exit Interview Manager</field>
+            <field name="name">Exit Interview: Manager</field>
             <field name="category_id" ref="base.module_category_human_resources"/>
             <field name="implied_ids" eval="[(4, ref('hr.group_hr_manager'))]"/>
         </record>
+
     </data>
 </odoo>

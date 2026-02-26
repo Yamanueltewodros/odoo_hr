@@ -30,18 +30,11 @@ class HrResignation(models.Model):
         'hr.department', string="Department",
         related='employee_id.department_id', readonly=True
     )
-    resign_confirm_date = fields.Date(
-        string="Confirmed Date", tracking=True
-    )
-    approved_revealing_date = fields.Date(
-        string="Approved Last Day Of Employee", tracking=True
-    )
-    joined_date = fields.Date(string="Join Date")
-    expected_revealing_date = fields.Date(
-        string="Last Day of Employee", required=True
-    )
+    resign_confirm_date = fields.Date(string="Confirmed Date", tracking=True)
+    approved_revealing_date = fields.Date(string="Approved Last Day Of Employee", tracking=True)
+    contract_start_date = fields.Date(string="Contract Start Date")
+    expected_revealing_date = fields.Date(string="Last Day of Employee", required=True)
     reason = fields.Text(string="Reason", required=True)
-    notice_period = fields.Char(string="Notice Period", readonly=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('confirm', 'Confirm'),
          ('approved', 'Approved'), ('cancel', 'Rejected')],
@@ -53,17 +46,26 @@ class HrResignation(models.Model):
     )
     employee_contract = fields.Char(string="Contract", readonly=True)
 
+    # Computed field to check if the current user owns this record
+    is_own_record = fields.Boolean(
+        string="Is Own Record",
+        compute="_compute_is_own_record"
+    )
+
+    @api.depends('employee_id')
+    def _compute_is_own_record(self):
+        for rec in self:
+            rec.is_own_record = rec.employee_id.user_id.id == self.env.uid
+
     # -------------------------------------------------------------------------
-    # Access Control — done in Python, no record rules needed
+    # Access Control
     # -------------------------------------------------------------------------
     def _is_manager(self):
         return self.env.user.has_group('hr_resignation.group_hr_resignation_manager')
 
     @api.model
     def _search(self, domain, offset=0, limit=None, order=None):
-        is_manager = self._is_manager()
-        _logger.warning("HR_RESIGNATION _search: user=%s is_manager=%s", self.env.user.name, is_manager)
-        if not is_manager:
+        if not self._is_manager():
             domain = list(domain) + [('employee_id.user_id', '=', self.env.uid)]
         return super()._search(domain, offset=offset, limit=limit, order=order)
 
@@ -80,8 +82,8 @@ class HrResignation(models.Model):
             ], limit=1)
             if duplicate:
                 raise ValidationError(
-                    _('A resignation request in Confirmed or Approved state '
-                      'already exists for %s.') % rec.employee_id.name
+                    _('A resignation request in Confirmed or Approved state already exists for %s.')
+                    % rec.employee_id.name
                 )
 
     # -------------------------------------------------------------------------
@@ -91,14 +93,13 @@ class HrResignation(models.Model):
     def _onchange_employee_id(self):
         if not self.employee_id:
             return
-        self.joined_date = self.employee_id.joining_date
         active_contract = self.env['hr.contract'].sudo().search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'open'),
         ], limit=1)
         if active_contract:
+            self.contract_start_date = active_contract.date_start
             self.employee_contract = active_contract.name
-            self.notice_period = active_contract.notice_days
 
     # -------------------------------------------------------------------------
     # Overrides
@@ -116,10 +117,10 @@ class HrResignation(models.Model):
     # -------------------------------------------------------------------------
     def action_confirm_resignation(self):
         for rec in self:
-            if not rec.joined_date:
-                raise ValidationError(_('Please set a Joining Date before confirming.'))
-            if rec.joined_date >= rec.expected_revealing_date:
-                raise ValidationError(_('Last Day must be after Join Date.'))
+            if not rec.contract_start_date:
+                raise ValidationError(_('Please set a Contract Start Date before confirming.'))
+            if rec.contract_start_date >= rec.expected_revealing_date:
+                raise ValidationError(_('Last Day must be after Contract Start Date.'))
             rec.state = 'confirm'
             rec.resign_confirm_date = fields.Date.today()
 

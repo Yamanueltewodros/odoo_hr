@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--
+            Adds a "Documents" smart button to the Employee form view
+            so HR Officers/Managers can quickly see all documents for that employee
+        -->
+        <record id="hr_employee_view_form_inherit_documents" model="ir.ui.view">
+            <field name="name">hr.employee.view.form.inherit.documents</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+                    <button name="%(hr_employee_documents.action_hr_employee_document)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            groups="hr_employee_documents.group_hr_document_officer"
+                            context="{'default_employee_id': id, 'search_default_employee_id': id}">
+                        <span class="o_stat_text">Documents</span>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="hr_exit_interview_rule_manager_all" model="ir.rule">
+            <field name="name">Exit Interview: Manager Full Access</field>
+            <field name="model_id" ref="hr_exit_interview.model_hr_exit_interview"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_exit_interview.group_hr_exit_interview_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

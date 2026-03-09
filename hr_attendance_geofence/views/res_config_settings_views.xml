@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_geofence" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.hr_attendance_geofence</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//form" position="inside">
+
+                <app string="Attendance Geofence" name="attendance_geofence">
+
+                    <block title="GPS Geofence Restriction">
+
+                        <setting string="Enable Geofence"
+                                 help="Restrict check-in/out to a GPS radius around the office.">
+                            <field name="attendance_geofence_enabled"/>
+                        </setting>
+
+                        <setting string="Office Latitude"
+                                 invisible="not attendance_geofence_enabled">
+                            <field name="attendance_lat"/>
+                        </setting>
+
+                        <setting string="Office Longitude"
+                                 invisible="not attendance_geofence_enabled">
+                            <field name="attendance_lng"/>
+                        </setting>
+
+                        <setting string="Allowed Radius (m)"
+                                 invisible="not attendance_geofence_enabled">
+                            <field name="attendance_radius"/>
+                        </setting>
+
+                        <setting string="Restriction Message"
+                                 invisible="not attendance_geofence_enabled">
+                            <field name="attendance_geofence_message"/>
+                        </setting>
+
+                    </block>
+
+                </app>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

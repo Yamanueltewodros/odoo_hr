@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        hr_attendance_geofence.GeofenceButton
+        Standalone button for the My Attendances backend view.
+    -->
+    <t t-name="hr_attendance_geofence.GeofenceButton">
+        <div class="o_attendance_geofence">
+            <button
+                class="btn btn-primary btn-lg o_attendance_geofence_btn"
+                t-on-click="onToggleAttendance"
+                t-att-disabled="state.loading"
+            >
+                <t t-if="state.loading">
+                    <span class="fa fa-spinner fa-spin me-1"/> Locating…
+                </t>
+                <t t-else="">
+                    <span class="fa fa-map-marker me-1"/> Check In / Out
+                </t>
+            </button>
+
+            <t t-if="state.config and state.config.enabled">
+                <small class="text-muted d-block mt-1">
+                    📍 Geofence active — must be within
+                    <t t-esc="state.config.radius"/> m of the office.
+                </small>
+            </t>
+        </div>
+    </t>
+
+</templates>

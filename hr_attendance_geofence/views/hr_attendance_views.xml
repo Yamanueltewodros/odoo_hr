@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- HR Attendance List View -->
+    <record id="hr_attendance_view_list_geofence" model="ir.ui.view">
+        <field name="name">hr.attendance.list.geofence</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='worked_hours']" position="after">
+                <field name="check_in_distance"  string="In Dist (m)"  optional="show"/>
+                <field name="check_out_distance" string="Out Dist (m)" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- HR Attendance Form View -->
+    <record id="hr_attendance_view_form_geofence" model="ir.ui.view">
+        <field name="name">hr.attendance.form.geofence</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='worked_hours']" position="after">
+                <separator string="GPS Data"/>
+                <group>
+                    <group string="Check-in Location">
+                        <field name="check_in_lat"      readonly="1"/>
+                        <field name="check_in_lng"      readonly="1"/>
+                        <field name="check_in_distance" readonly="1" string="Distance from Office (m)"/>
+                    </group>
+                    <group string="Check-out Location">
+                        <field name="check_out_lat"      readonly="1"/>
+                        <field name="check_out_lng"      readonly="1"/>
+                        <field name="check_out_distance" readonly="1" string="Distance from Office (m)"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

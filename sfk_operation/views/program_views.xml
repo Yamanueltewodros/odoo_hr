@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_program_view_list" model="ir.ui.view">
+            <field name="name">sfk.program.list</field>
+            <field name="model">sfk.program</field>
+            <field name="arch" type="xml">
+                <list string="Programs">
+                    <field name="name"/>
+                    <field name="program_type"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-success="state == 'running'"
+                           decoration-muted="state == 'closed'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_program_view_form" model="ir.ui.view">
+            <field name="name">sfk.program.form</field>
+            <field name="model">sfk.program</field>
+            <field name="arch" type="xml">
+                <form string="Program">
+                    <header>
+                        <button name="action_run" string="Start Program"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation.group_sfk_coordinator"/>
+                        <button name="action_close" string="Close Program"
+                                type="object"
+                                invisible="state != 'running'"
+                                groups="sfk_operation.group_sfk_manager"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft"
+                                type="object"
+                                invisible="state == 'draft'"
+                                groups="sfk_operation.group_sfk_manager"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,running,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(action_sfk_student)s"
+                                    type="action" class="oe_stat_button"
+                                    icon="fa-users"
+                                    invisible="program_type != 'center'"
+                                    context="{'default_program_id': id}">
+                                <field name="student_count" widget="statinfo"
+                                       string="Students"/>
+                            </button>
+                            <button name="%(action_sfk_program_session)s"
+                                    type="action" class="oe_stat_button"
+                                    icon="fa-calendar"
+                                    context="{'default_program_id': id,
+                                              'search_default_program_id': id}">
+                                <field name="session_count" widget="statinfo"
+                                       string="Sessions"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"
+                                       placeholder="e.g. After-School Robotics"
+                                       readonly="state != 'draft'"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Program Details">
+                                <field name="program_type" readonly="state != 'draft'"/>
+                                <field name="course_ids" widget="many2many_tags"
+                                       readonly="state != 'draft'"/>
+                                <field name="company_id" readonly="state != 'draft'"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="start_date" readonly="state != 'draft'"/>
+                                <field name="end_date" readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+                        <group string="Program Team">
+                            <group>
+                                <field name="manager_id" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="supervisor_id" readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+
+                        <!-- Center-Based Fields -->
+                        <group string="Center-Based Settings"
+                               invisible="program_type != 'center'">
+                            <group>
+                                <field name="max_student_capacity"
+                                       readonly="state != 'draft'"/>
+                                <field name="age_group" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="default_room_id"
+                                       readonly="state != 'draft'"
+                                       domain="[('company_id', '=', company_id)]"/>
+                            </group>
+                        </group>
+
+                        <!-- School-Based Fields -->
+                        <group string="School-Based Settings"
+                               invisible="program_type != 'school'">
+                            <group>
+                                <field name="school_name" readonly="state != 'draft'"/>
+                                <field name="school_location" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="grade_based" readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Terms" name="terms">
+                                <field name="term_ids"
+                                       readonly="state != 'draft'"
+                                       context="{'default_program_id': id}">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="active"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Permanent Schedules" name="schedules">
+                                <field name="permanent_schedule_ids"
+                                       readonly="state != 'draft'"
+                                       context="{'default_program_id': id}">
+                                    <list editable="bottom">
+                                        <field name="term_id"
+                                               domain="[('program_id', '=', parent.id)]"/>
+                                        <field name="grade"/>
+                                        <field name="course_id" readonly="1"
+                                               force_save="1"/>
+                                        <field name="lead_instructor_id"/>
+                                        <field name="assistant_instructor_id"
+                                               optional="hide"/>
+                                        <field name="weekday"/>
+                                        <field name="start_time" widget="float_time"/>
+                                        <field name="end_time" widget="float_time"/>
+                                        <field name="duration_hours"
+                                               widget="float_time" readonly="1"/>
+                                        <field name="room_id"
+                                               domain="[('company_id', '=', parent.company_id)]"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Active Enrollments" name="enrollments"
+                                  invisible="program_type != 'center'">
+                                <field name="enrollment_ids"
+                                       context="{'default_program_id': id}">
+                                    <list editable="bottom">
+                                        <field name="student_id"
+                                               domain="[('program_id', '=', parent.id)]"/>
+                                        <field name="term_id"
+                                               domain="[('program_id', '=', parent.id)]"/>
+                                        <field name="course_id"
+                                               domain="[('id', 'in', parent.course_ids)]"/>
+                                        <field name="enrollment_date"/>
+                                        <field name="status"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="All Students" name="students"
+                                  invisible="program_type != 'center'">
+                                <field name="student_ids"
+                                       context="{'default_program_id': id}">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="age"/>
+                                        <field name="status"/>
+                                        <field name="enrollment_date"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_program" model="ir.actions.act_window">
+            <field name="name">Programs</field>
+            <field name="res_model">sfk.program</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

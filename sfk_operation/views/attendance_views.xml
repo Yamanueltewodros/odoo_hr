@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_attendance_view_list" model="ir.ui.view">
+            <field name="name">sfk.attendance.list</field>
+            <field name="model">sfk.attendance</field>
+            <field name="arch" type="xml">
+                <list string="Attendance"
+                      decoration-success="status == 'present'"
+                      decoration-danger="status == 'absent'"
+                      decoration-warning="status == 'late'">
+                    <field name="session_id"/>
+                    <field name="session_date" optional="show"/>
+                    <field name="program_id" optional="show"/>
+                    <field name="student_id"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status == 'present'"
+                           decoration-danger="status == 'absent'"
+                           decoration-warning="status == 'late'"/>
+                    <field name="notes" optional="show"/>
+                    <field name="checked_by" optional="hide"/>
+                    <field name="checked_date" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_attendance_view_form" model="ir.ui.view">
+            <field name="name">sfk.attendance.form</field>
+            <field name="model">sfk.attendance</field>
+            <field name="arch" type="xml">
+                <form string="Attendance Record">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="session_id" readonly="1"/>
+                                <field name="student_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="status" widget="radio"
+                                       options="{'horizontal': true}"/>
+                                <field name="notes"/>
+                            </group>
+                        </group>
+                        <group string="Audit">
+                            <field name="checked_by" readonly="1"/>
+                            <field name="checked_date" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_attendance" model="ir.actions.act_window">
+            <field name="name">Attendance Records</field>
+            <field name="res_model">sfk.attendance</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

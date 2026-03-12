@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_sfk_instructor" model="res.groups">
+            <field name="name">Instructor</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Can view and manage their own sessions and record attendance.</field>
+        </record>
+
+        <record id="group_sfk_coordinator" model="res.groups">
+            <field name="name">Coordinator</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('sfk_operation.group_sfk_instructor'))]"/>
+            <field name="comment">Can manage programs, sessions, students, and enrollments.</field>
+        </record>
+
+        <record id="group_sfk_manager" model="res.groups">
+            <field name="name">Operations Manager</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('sfk_operation.group_sfk_coordinator'))]"/>
+            <field name="comment">Full access including configuration, rooms, and reporting.</field>
+        </record>
+    </data>
+</odoo>

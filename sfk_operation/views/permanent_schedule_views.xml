@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_permanent_schedule_view_list" model="ir.ui.view">
+            <field name="name">sfk.permanent.schedule.list</field>
+            <field name="model">sfk.permanent.schedule</field>
+            <field name="arch" type="xml">
+                <list string="Permanent Schedules">
+                    <field name="program_id"/>
+                    <field name="term_id"/>
+                    <field name="grade"/>
+                    <field name="course_id"/>
+                    <field name="lead_instructor_id"/>
+                    <field name="weekday"/>
+                    <field name="start_time" widget="float_time"/>
+                    <field name="end_time" widget="float_time"/>
+                    <field name="room_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_permanent_schedule_view_form" model="ir.ui.view">
+            <field name="name">sfk.permanent.schedule.form</field>
+            <field name="model">sfk.permanent.schedule</field>
+            <field name="arch" type="xml">
+                <form string="Permanent Schedule">
+                    <sheet>
+                        <group>
+                            <group string="Program Context">
+                                <field name="program_id"/>
+                                <field name="term_id"
+                                       domain="[('program_id', '=', program_id)]"/>
+                                <field name="grade"/>
+                                <field name="course_id" readonly="1" force_save="1"/>
+                            </group>
+                            <group string="Timing">
+                                <field name="weekday"/>
+                                <field name="start_time" widget="float_time"/>
+                                <field name="end_time" widget="float_time"/>
+                                <field name="duration_hours" widget="float_time"
+                                       readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Instructors">
+                                <field name="lead_instructor_id"/>
+                                <field name="assistant_instructor_id"/>
+                            </group>
+                            <group string="Location">
+                                <field name="center_id"/>
+                                <field name="room_id"
+                                       domain="[('company_id', '=', center_id)]"/>
+                                <field name="student_count"
+                                       invisible="program_type != 'school'"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_permanent_schedule" model="ir.actions.act_window">
+            <field name="name">Permanent Schedules</field>
+            <field name="res_model">sfk.permanent.schedule</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ── Root Menu ─────────────────────────────────────────────────── -->
+        <menuitem id="sfk_operation_menu_root"
+                  name="STEM Operations"
+                  sequence="10"
+                  web_icon="sfk_operation,static/description/icon.png"/>
+
+        <!-- ── Programs ──────────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_program"
+                  name="Programs"
+                  parent="sfk_operation_menu_root"
+                  action="action_sfk_program"
+                  sequence="10"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+
+        <!-- ── Today's Sessions (visible to instructors) ─────────────────── -->
+        <menuitem id="sfk_menu_today_sessions"
+                  name="My Today's Sessions"
+                  parent="sfk_operation_menu_root"
+                  action="action_sfk_today_session"
+                  sequence="15"
+                  groups="sfk_operation.group_sfk_instructor"/>
+
+        <!-- ── All Sessions ───────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_all_sessions"
+                  name="All Sessions"
+                  parent="sfk_operation_menu_root"
+                  action="action_sfk_program_session"
+                  sequence="20"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+
+        <!-- ── Students ──────────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_students"
+                  name="Students"
+                  parent="sfk_operation_menu_root"
+                  action="action_sfk_student"
+                  sequence="30"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+
+        <!-- ── Attendance ─────────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_attendance"
+                  name="Attendance"
+                  parent="sfk_operation_menu_root"
+                  action="action_sfk_attendance"
+                  sequence="40"
+                  groups="sfk_operation.group_sfk_instructor"/>
+
+        <!-- ── Reports ────────────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_reports"
+                  name="Reports"
+                  parent="sfk_operation_menu_root"
+                  sequence="50"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+
+        <!-- TODO: Add report wizard view and re-enable this menu item -->
+        <!-- <menuitem id="sfk_menu_report_wizard"
+                  name="Operations Reports"
+                  parent="sfk_menu_reports"
+                  action="action_sfk_session_report_wizard"
+                  sequence="10"
+                  groups="sfk_operation.group_sfk_coordinator"/> -->
+
+        <!-- ── Configuration ─────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_config"
+                  name="Configuration"
+                  parent="sfk_operation_menu_root"
+                  sequence="100"
+                  groups="sfk_operation.group_sfk_manager"/>
+
+        <menuitem id="sfk_menu_config_courses"
+                  name="Courses"
+                  parent="sfk_menu_config"
+                  action="action_sfk_course"
+                  sequence="10"
+                  groups="sfk_operation.group_sfk_manager"/>
+
+        <menuitem id="sfk_menu_config_rooms"
+                  name="Rooms"
+                  parent="sfk_menu_config"
+                  action="action_sfk_room"
+                  sequence="20"
+                  groups="sfk_operation.group_sfk_manager"/>
+
+        <menuitem id="sfk_menu_config_terms"
+                  name="Terms"
+                  parent="sfk_menu_config"
+                  action="action_sfk_term"
+                  sequence="30"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+
+        <menuitem id="sfk_menu_config_schedules"
+                  name="Permanent Schedules"
+                  parent="sfk_menu_config"
+                  action="action_sfk_permanent_schedule"
+                  sequence="40"
+                  groups="sfk_operation.group_sfk_coordinator"/>
+    </data>
+</odoo>

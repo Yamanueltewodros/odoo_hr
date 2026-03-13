@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Multi-company rules -->
+        <record id="sfk_compliance_check_company_rule" model="ir.rule">
+            <field name="name">Compliance Check Multi-Company</field>
+            <field name="model_id" ref="model_sfk_compliance_check"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sfk_audit_company_rule" model="ir.rule">
+            <field name="name">Audit Multi-Company</field>
+            <field name="model_id" ref="model_sfk_audit"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sfk_equipment_incident_company_rule" model="ir.rule">
+            <field name="name">Equipment Incident Multi-Company</field>
+            <field name="model_id" ref="model_sfk_equipment_incident"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sfk_staff_training_company_rule" model="ir.rule">
+            <field name="name">Staff Training Multi-Company</field>
+            <field name="model_id" ref="model_sfk_staff_training"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Head of Standards sees everything in their companies -->
+        <record id="sfk_compliance_head_rule" model="ir.rule">
+            <field name="name">Head of Standards: All Company Compliance Checks</field>
+            <field name="model_id" ref="model_sfk_compliance_check"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_standard.group_sfk_head_of_standards'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+
+        <!-- Coordinator: sees compliance checks for their programs -->
+        <record id="sfk_compliance_coord_rule" model="ir.rule">
+            <field name="name">Coordinator: Own Program Compliance Checks</field>
+            <field name="model_id" ref="model_sfk_compliance_check"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_coordinator'))]"/>
+            <field name="domain_force">[('program_id.manager_id', '=', user.id)]</field>
+        </record>
+
+        <!-- Operations Manager sees everything -->
+        <record id="sfk_compliance_manager_rule" model="ir.rule">
+            <field name="name">Operations Manager: All Compliance Checks</field>
+            <field name="model_id" ref="model_sfk_compliance_check"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+    </data>
+</odoo>

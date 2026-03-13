@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_compliance_check_view_list" model="ir.ui.view">
+            <field name="name">sfk.compliance.check.list</field>
+            <field name="model">sfk.compliance.check</field>
+            <field name="arch" type="xml">
+                <list string="Compliance Checks"
+                      decoration-success="overall_result == 'pass'"
+                      decoration-warning="overall_result == 'pass_with_remarks'"
+                      decoration-danger="overall_result == 'fail'">
+                    <field name="name"/>
+                    <field name="check_date"/>
+                    <field name="program_id"/>
+                    <field name="session_id" optional="show"/>
+                    <field name="child_safety_score" widget="badge"
+                           decoration-success="child_safety_score == 'pass'"
+                           decoration-warning="child_safety_score == 'minor'"
+                           decoration-danger="child_safety_score in ('major','fail')"/>
+                    <field name="curriculum_score" widget="badge"
+                           decoration-success="curriculum_score == 'pass'"
+                           decoration-warning="curriculum_score == 'minor'"
+                           decoration-danger="curriculum_score in ('major','fail')"/>
+                    <field name="facility_score" widget="badge"
+                           decoration-success="facility_score == 'pass'"
+                           decoration-warning="facility_score == 'minor'"
+                           decoration-danger="facility_score in ('major','fail')"/>
+                    <field name="overall_result" widget="badge"
+                           decoration-success="overall_result == 'pass'"
+                           decoration-warning="overall_result == 'pass_with_remarks'"
+                           decoration-danger="overall_result == 'fail'"/>
+                    <field name="escalate_to_head" optional="show"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-warning="state == 'submitted'"
+                           decoration-success="state == 'reviewed'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_compliance_check_view_form" model="ir.ui.view">
+            <field name="name">sfk.compliance.check.form</field>
+            <field name="model">sfk.compliance.check</field>
+            <field name="arch" type="xml">
+                <form string="Workshop Compliance Check">
+                    <header>
+                        <button name="action_submit" string="Submit"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_standards_officer"/>
+                        <button name="action_mark_reviewed" string="Mark Reviewed"
+                                type="object" class="btn-success"
+                                invisible="state != 'submitted'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_reset_draft" string="Reset to Draft"
+                                type="object"
+                                invisible="state == 'draft'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,submitted,reviewed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Check Details">
+                                <field name="check_date"/>
+                                <field name="session_id"/>
+                                <field name="program_id"/>
+                                <field name="company_id"/>
+                                <field name="reviewer_id" readonly="1"/>
+                            </group>
+                            <group string="Overall Result">
+                                <field name="overall_result" widget="badge"
+                                       decoration-success="overall_result == 'pass'"
+                                       decoration-warning="overall_result == 'pass_with_remarks'"
+                                       decoration-danger="overall_result == 'fail'"/>
+                                <field name="escalate_to_head"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Child Safety &amp; Ethics" name="child_safety">
+                                <group>
+                                    <field name="child_safety_score" widget="radio"
+                                           options="{'horizontal': true}"/>
+                                    <field name="child_safety_notes"
+                                           placeholder="Describe any issues observed…"/>
+                                </group>
+                            </page>
+                            <page string="Curriculum Delivery" name="curriculum">
+                                <group>
+                                    <field name="curriculum_score" widget="radio"
+                                           options="{'horizontal': true}"/>
+                                    <field name="curriculum_notes"
+                                           placeholder="Describe any deviations from SFK standards…"/>
+                                </group>
+                            </page>
+                            <page string="Facility &amp; Resources" name="facility">
+                                <group>
+                                    <field name="facility_score" widget="radio"
+                                           options="{'horizontal': true}"/>
+                                    <field name="facility_notes"
+                                           placeholder="Describe any readiness issues…"/>
+                                </group>
+                            </page>
+                            <page string="Recommendations" name="recommendations">
+                                <field name="recommendations"
+                                       placeholder="Enter follow-up actions or recommendations…"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_compliance_check" model="ir.actions.act_window">
+            <field name="name">Compliance Checks</field>
+            <field name="res_model">sfk.compliance.check</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_sfk_compliance_check_pending" model="ir.actions.act_window">
+            <field name="name">Pending Reviews</field>
+            <field name="res_model">sfk.compliance.check</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'in', ('draft', 'submitted'))]</field>
+        </record>
+
+        <record id="action_sfk_compliance_check_escalated" model="ir.actions.act_window">
+            <field name="name">Escalated Checks</field>
+            <field name="res_model">sfk.compliance.check</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('escalate_to_head', '=', True), ('state', '!=', 'reviewed')]</field>
+        </record>
+    </data>
+</odoo>

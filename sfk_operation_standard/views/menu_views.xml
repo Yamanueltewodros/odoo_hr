@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ── Standards Root Menu (under STEM Operations) ───────────────── -->
+        <menuitem id="sfk_standards_menu_root"
+                  name="Standards"
+                  parent="sfk_operation.sfk_operation_menu_root"
+                  sequence="60"
+                  groups="sfk_operation_standard.group_sfk_standards_officer,sfk_operation_standard.group_sfk_head_of_standards,sfk_operation.group_sfk_manager"/>
+
+        <!-- ── Weekly Reports ─────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_weekly_reports"
+                  name="Weekly Reports"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_weekly_report"
+                  sequence="5"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards,sfk_operation.group_sfk_manager"/>
+
+        <!-- ── Compliance Checks ──────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_compliance_checks"
+                  name="Compliance Checks"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_compliance_check"
+                  sequence="10"
+                  groups="sfk_operation_standard.group_sfk_standards_officer"/>
+
+        <menuitem id="sfk_menu_compliance_pending"
+                  name="Pending Reviews"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_compliance_check_pending"
+                  sequence="15"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+
+        <menuitem id="sfk_menu_compliance_escalated"
+                  name="Escalated Checks"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_compliance_check_escalated"
+                  sequence="16"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards,sfk_operation.group_sfk_manager"/>
+
+        <!-- ── Audits ──────────────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_audits"
+                  name="Audits"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_audit"
+                  sequence="20"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards,sfk_operation.group_sfk_manager"/>
+
+        <!-- ── Corrective Action Plans ────────────────────────────────────── -->
+        <menuitem id="sfk_menu_corrective_actions"
+                  name="Corrective Actions"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_corrective_action_open"
+                  sequence="25"
+                  groups="sfk_operation_standard.group_sfk_standards_officer"/>
+
+        <!-- ── Equipment Incidents ────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_equipment_incidents"
+                  name="Equipment Incidents"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_equipment_incident"
+                  sequence="30"
+                  groups="sfk_operation_standard.group_sfk_standards_officer"/>
+
+        <menuitem id="sfk_menu_equipment_incidents_open"
+                  name="Open Incidents"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_equipment_incident_open"
+                  sequence="31"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards,sfk_operation.group_sfk_manager"/>
+
+        <!-- ── Staff Training ─────────────────────────────────────────────── -->
+        <menuitem id="sfk_menu_staff_training"
+                  name="Staff Training"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_staff_training"
+                  sequence="40"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+
+        <!-- ── Policies & Standards Manuals ──────────────────────────────── -->
+        <menuitem id="sfk_menu_policies"
+                  name="Policies &amp; Manuals"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_policy_active"
+                  sequence="50"
+                  groups="sfk_operation_standard.group_sfk_standards_officer"/>
+
+        <menuitem id="sfk_menu_policies_all"
+                  name="All Policies"
+                  parent="sfk_standards_menu_root"
+                  action="action_sfk_policy"
+                  sequence="51"
+                  groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+    </data>
+</odoo>

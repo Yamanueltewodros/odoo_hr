@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_staff_training_view_list" model="ir.ui.view">
+            <field name="name">sfk.staff.training.list</field>
+            <field name="model">sfk.staff.training</field>
+            <field name="arch" type="xml">
+                <list string="Staff Training">
+                    <field name="name"/>
+                    <field name="training_title"/>
+                    <field name="training_type" widget="badge"/>
+                    <field name="training_date"/>
+                    <field name="training_year"/>
+                    <field name="company_id"/>
+                    <field name="participant_count" string="Participants"/>
+                    <field name="certified_count" string="Certified"/>
+                    <field name="completion_rate" string="Attendance %" widget="percentage"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'planned'"
+                           decoration-success="state == 'completed'"
+                           decoration-muted="state == 'cancelled'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_staff_training_view_form" model="ir.ui.view">
+            <field name="name">sfk.staff.training.form</field>
+            <field name="model">sfk.staff.training</field>
+            <field name="arch" type="xml">
+                <form string="Staff Training">
+                    <header>
+                        <button name="action_complete" string="Mark Completed"
+                                type="object" class="btn-primary"
+                                invisible="state != 'planned'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_cancel" string="Cancel"
+                                type="object"
+                                invisible="state != 'planned'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="planned,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <div class="oe_stat_button" icon="fa-users">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="certified_count"/>
+                                        / <field name="participant_count"/>
+                                    </span>
+                                    <span class="o_stat_text">Certified</span>
+                                </div>
+                            </div>
+                            <div class="oe_stat_button" icon="fa-percent">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="completion_rate"
+                                               widget="percentage" digits="[3,1]"/>
+                                    </span>
+                                    <span class="o_stat_text">Attendance</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="training_title"
+                                       placeholder="e.g. Annual Child Safety Training 2025"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Training Details">
+                                <field name="name" readonly="1"/>
+                                <field name="training_type"/>
+                                <field name="training_date"/>
+                                <field name="company_id"/>
+                                <field name="facilitator_id"/>
+                            </group>
+                            <group string="Resources">
+                                <field name="materials_url"
+                                       placeholder="Link to training materials…"/>
+                                <field name="description"
+                                       placeholder="Overview of training content…"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Participants" name="participants">
+                                <field name="participant_ids">
+                                    <list editable="bottom"
+                                          decoration-success="certified"
+                                          decoration-warning="not attended">
+                                        <field name="employee_id"/>
+                                        <field name="attended"/>
+                                        <field name="certified"/>
+                                        <field name="notes"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_staff_training" model="ir.actions.act_window">
+            <field name="name">Staff Trainings</field>
+            <field name="res_model">sfk.staff.training</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

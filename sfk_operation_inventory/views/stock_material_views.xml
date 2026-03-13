@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_material_transfer_action" model="ir.actions.act_window">
+            <field name="name">Program Transfers</field>
+            <field name="res_model">sfk.program.material.transfer</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="sfk_material_transfer_pending_action" model="ir.actions.act_window">
+            <field name="name">Pending Transfers</field>
+            <field name="res_model">sfk.program.material.transfer</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'in', ('draft', 'approved', 'dispatched'))]</field>
+        </record>
+
+        <record id="sfk_material_discrepancy_report_action" model="ir.actions.act_window">
+            <field name="name">Discrepancy Reports</field>
+            <field name="res_model">sfk.program.material.discrepancy.report</field>
+            <field name="view_mode">list,form,pivot,graph</field>
+        </record>
+
+        <record id="sfk_material_stock_location_action" model="ir.actions.act_window">
+            <field name="name">Stock by Location</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">list,pivot,graph</field>
+            <field name="domain">[('location_id.usage', '=', 'internal')]</field>
+            <field name="context">{'search_default_group_location': 1}</field>
+        </record>
+
+        <record id="sfk_material_low_stock_action" model="ir.actions.act_window">
+            <field name="name">Low Stock Alerts</field>
+            <field name="res_model">stock.quant</field>
+            <field name="view_mode">list,pivot,graph</field>
+            <field name="domain">[('location_id.usage', '=', 'internal'), ('quantity', '&lt;=', 0)]</field>
+        </record>
+
+        <record id="sfk_direct_internal_transfer_action" model="ir.actions.act_window">
+            <field name="name">Direct Internal Movements</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('picking_type_code', '=', 'internal')]</field>
+        </record>
+
+        <record id="sfk_material_transfer_view_list" model="ir.ui.view">
+            <field name="name">sfk.program.material.transfer.list</field>
+            <field name="model">sfk.program.material.transfer</field>
+            <field name="arch" type="xml">
+                <list decoration-danger="state == 'draft'" decoration-warning="state == 'approved'" decoration-success="state == 'received'">
+                    <field name="name"/>
+                    <field name="program_id"/>
+                    <field name="session_id" optional="show"/>
+                    <field name="priority" optional="show"/>
+                    <field name="deadline" optional="show"/>
+                    <field name="source_location_id"/>
+                    <field name="destination_location_id"/>
+                    <field name="requested_by"/>
+                    <field name="approved_by" optional="show"/>
+                    <field name="dispatched_by" optional="show"/>
+                    <field name="receipt_confirmed_by" optional="show"/>
+                    <field name="state" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_material_transfer_view_form" model="ir.ui.view">
+            <field name="name">sfk.program.material.transfer.form</field>
+            <field name="model">sfk.program.material.transfer</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_approve_request" string="Approve Request" type="object" class="btn-primary" invisible="state != 'draft'" groups="stock.group_stock_manager"/>
+                        <button name="action_confirm_dispatch" string="Confirm Dispatch" type="object" class="btn-secondary" invisible="state != 'approved'"/>
+                        <button name="action_confirm_receipt" string="Confirm Receipt" type="object" class="btn-success" invisible="state != 'dispatched'"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="state in ('received','cancelled')"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approved,dispatched,received,cancelled"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="program_id" readonly="state != 'draft'"/>
+                                <field name="session_id" readonly="state != 'draft'"/>
+                                <field name="company_id" readonly="1"/>
+                                <field name="picking_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="priority" readonly="state != 'draft'"/>
+                                <field name="deadline" readonly="state != 'draft'"/>
+                                <field name="destination_location_id" readonly="state != 'draft'"/>
+                                <field name="source_location_id" readonly="1" groups="!stock.group_stock_manager"/>
+                                <field name="source_location_id" readonly="state != 'draft'" groups="stock.group_stock_manager"/>
+                                <field name="picking_type_id" readonly="1" groups="!stock.group_stock_manager"/>
+                                <field name="picking_type_id" readonly="state != 'draft'" groups="stock.group_stock_manager"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="requested_on" readonly="1"/>
+                            <field name="approved_on" readonly="1"/>
+                            <field name="dispatched_on" readonly="1"/>
+                            <field name="receipt_confirmed_on" readonly="1"/>
+                        </group>
+                        <notebook>
+                            <page string="Materials">
+                                <field name="line_ids" readonly="state != 'draft'">
+                                    <list editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="approved_uom_qty" readonly="1" groups="!stock.group_stock_manager"/>
+                                        <field name="approved_uom_qty" groups="stock.group_stock_manager"/>
+                                        <field name="validated_uom_qty" readonly="1"/>
+                                        <field name="request_approved_diff_qty" readonly="1"/>
+                                        <field name="approved_validated_diff_qty" readonly="1"/>
+                                        <field name="product_uom_id"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Discrepancies">
+                                <group>
+                                    <field name="discrepancy_note"/>
+                                <field name="discrepancy_report_id" readonly="1"/>
+                            </group>
+                                <field name="discrepancy_line_ids" readonly="state not in ('dispatched', 'received')">
+                                    <list editable="bottom">
+                                        <field name="product_id" domain="[('id', 'in', transfer_id.line_ids.product_id)]"/>
+                                        <field name="approved_qty" readonly="1"/>
+                                        <field name="received_good_qty"/>
+                                        <field name="missing_qty"/>
+                                        <field name="damaged_qty"/>
+                                        <field name="note"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Quantity Summary">
+                                <group>
+                                    <field name="requested_total_qty" readonly="1"/>
+                                    <field name="approved_total_qty" readonly="1"/>
+                                    <field name="validated_total_qty" readonly="1"/>
+                                    <field name="request_approved_diff_total" readonly="1"/>
+                                    <field name="approved_validated_diff_total" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="sfk_material_discrepancy_report_view_list" model="ir.ui.view">
+            <field name="name">sfk.program.material.discrepancy.report.list</field>
+            <field name="model">sfk.program.material.discrepancy.report</field>
+            <field name="arch" type="xml">
+                <list decoration-danger="state == 'open'">
+                    <field name="name"/>
+                    <field name="program_id"/>
+                    <field name="transfer_id"/>
+                    <field name="reported_by"/>
+                    <field name="reported_on"/>
+                    <field name="missing_total"/>
+                    <field name="damaged_total"/>
+                    <field name="state" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_material_discrepancy_report_view_form" model="ir.ui.view">
+            <field name="name">sfk.program.material.discrepancy.report.form</field>
+            <field name="model">sfk.program.material.discrepancy.report</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_mark_resolved" string="Mark Resolved" type="object" class="btn-success" invisible="state != 'open'" groups="stock.group_stock_manager,sfk_operation.group_sfk_manager"/>
+                        <field name="state" widget="statusbar" statusbar_visible="open,resolved"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="program_id" readonly="1"/>
+                                <field name="transfer_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="reported_by" readonly="1"/>
+                                <field name="reported_on" readonly="1"/>
+                                <field name="company_id" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="missing_total" readonly="1"/>
+                            <field name="damaged_total" readonly="1"/>
+                        </group>
+                        <field name="line_ids" readonly="1">
+                            <list>
+                                <field name="product_id"/>
+                                <field name="approved_qty"/>
+                                <field name="received_good_qty"/>
+                                <field name="missing_qty"/>
+                                <field name="damaged_qty"/>
+                                <field name="note"/>
+                            </list>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="sfk_material_discrepancy_report_pivot" model="ir.ui.view">
+            <field name="name">sfk.program.material.discrepancy.report.pivot</field>
+            <field name="model">sfk.program.material.discrepancy.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Discrepancy Analysis">
+                    <field name="program_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="missing_total" type="measure"/>
+                    <field name="damaged_total" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="sfk_material_discrepancy_report_graph" model="ir.ui.view">
+            <field name="name">sfk.program.material.discrepancy.report.graph</field>
+            <field name="model">sfk.program.material.discrepancy.report</field>
+            <field name="arch" type="xml">
+                <graph string="Discrepancy Trends" type="bar">
+                    <field name="program_id"/>
+                    <field name="missing_total" type="measure"/>
+                    <field name="damaged_total" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="sfk_program_form_inherit_stock" model="ir.ui.view">
+            <field name="name">sfk.program.form.stock.inherit</field>
+            <field name="model">sfk.program</field>
+            <field name="inherit_id" ref="sfk_operation.sfk_program_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_material_transfers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-exchange">
+                        <field name="material_transfer_count" widget="statinfo" string="Transfers"/>
+                    </button>
+                </xpath>
+                <xpath expr="//field[@name='supervisor_id']" position="after">
+                    <group string="Material Control">
+                        <group>
+                            <field name="program_stock_location_id"/>
+                        </group>
+                        <group>
+                            <button name="action_create_program_stock_location"
+                                    string="Create Program Location"
+                                    type="object"
+                                    class="btn-secondary"
+                                    invisible="program_stock_location_id"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sfk_stock_location_view_form_inherit" model="ir.ui.view">
+            <field name="name">stock.location.form.sfk.responsible</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="sfk_responsible_employee_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem id="sfk_inventory_material_menu"
+                  name="Materials"
+                  parent="sfk_operation.sfk_operation_menu_root"
+                  sequence="70"/>
+
+        <menuitem id="sfk_inventory_material_transfer_menu"
+                  name="Program Transfers"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_material_transfer_action"
+                  groups="sfk_operation.group_sfk_coordinator,sfk_operation.group_sfk_manager,sfk_operation_inventory.group_sfk_inventory_supervisor,sfk_operation_inventory.group_sfk_inventory_location_responsible,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="10"/>
+
+        <menuitem id="sfk_inventory_material_pending_menu"
+                  name="Pending Requests"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_material_transfer_pending_action"
+                  groups="sfk_operation.group_sfk_coordinator,sfk_operation.group_sfk_manager,sfk_operation_inventory.group_sfk_inventory_supervisor,sfk_operation_inventory.group_sfk_inventory_location_responsible,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="20"/>
+
+        <menuitem id="sfk_inventory_material_stock_menu"
+                  name="Stock by Location"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_material_stock_location_action"
+                  groups="sfk_operation.group_sfk_manager,sfk_operation_inventory.group_sfk_inventory_location_responsible,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="30"/>
+
+        <menuitem id="sfk_inventory_material_low_stock_menu"
+                  name="Low Stock Alerts"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_material_low_stock_action"
+                  groups="sfk_operation.group_sfk_manager,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="40"/>
+
+        <menuitem id="sfk_inventory_material_discrepancy_menu"
+                  name="Discrepancy Reports"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_material_discrepancy_report_action"
+                  groups="sfk_operation.group_sfk_manager,sfk_operation_inventory.group_sfk_inventory_supervisor,sfk_operation_inventory.group_sfk_inventory_location_responsible,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="50"/>
+
+        <menuitem id="sfk_inventory_material_direct_move_menu"
+                  name="Direct Internal Movements"
+                  parent="sfk_inventory_material_menu"
+                  action="sfk_direct_internal_transfer_action"
+                  groups="sfk_operation.group_sfk_manager,sfk_operation_inventory.group_sfk_inventory_location_responsible,stock.group_stock_user,stock.group_stock_manager"
+                  sequence="60"/>
+    </data>
+</odoo>

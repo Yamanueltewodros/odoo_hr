@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_weekly_report_view_list" model="ir.ui.view">
+            <field name="name">sfk.weekly.report.list</field>
+            <field name="model">sfk.weekly.report</field>
+            <field name="arch" type="xml">
+                <list string="Weekly Reports"
+                      decoration-success="state == 'acknowledged'"
+                      decoration-warning="state == 'submitted'"
+                      decoration-info="state == 'draft'">
+                    <field name="name"/>
+                    <field name="week_start"/>
+                    <field name="week_end"/>
+                    <field name="company_id"/>
+                    <field name="prepared_by"/>
+                    <field name="compliance_checks_total" string="Checks"/>
+                    <field name="compliance_checks_failed" string="Failed"
+                           decoration-danger="compliance_checks_failed > 0"/>
+                    <field name="open_audit_findings" string="Open Findings"
+                           decoration-warning="open_audit_findings > 0"/>
+                    <field name="critical_audit_findings" string="Critical"
+                           decoration-danger="critical_audit_findings > 0"/>
+                    <field name="equipment_incidents_new" string="New Incidents"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-warning="state == 'submitted'"
+                           decoration-success="state == 'acknowledged'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_weekly_report_view_form" model="ir.ui.view">
+            <field name="name">sfk.weekly.report.form</field>
+            <field name="model">sfk.weekly.report</field>
+            <field name="arch" type="xml">
+                <form string="Consolidated Weekly Report">
+                    <header>
+                        <button name="action_submit" string="Submit to Head of Operation"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_acknowledge" string="Acknowledge"
+                                type="object" class="btn-success"
+                                invisible="state != 'submitted'"
+                                groups="sfk_operation.group_sfk_manager"/>
+                        <button name="action_reset_draft" string="Reset to Draft"
+                                type="object"
+                                invisible="state != 'submitted'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_refresh_kpis" string="Refresh KPIs"
+                                type="object"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,submitted,acknowledged"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Report Period">
+                                <field name="week_start"/>
+                                <field name="week_end" readonly="1"/>
+                                <field name="company_id"/>
+                                <field name="prepared_by" readonly="1"/>
+                                <field name="submitted_date" readonly="1"
+                                       invisible="not submitted_date"/>
+                            </group>
+                            <group string="This Week's KPIs">
+                                <field name="compliance_checks_total"/>
+                                <field name="compliance_checks_failed"
+                                       decoration-danger="compliance_checks_failed > 0"/>
+                                <field name="compliance_checks_escalated"
+                                       decoration-danger="compliance_checks_escalated > 0"/>
+                                <field name="open_audit_findings"
+                                       decoration-warning="open_audit_findings > 0"/>
+                                <field name="critical_audit_findings"
+                                       decoration-danger="critical_audit_findings > 0"/>
+                                <field name="equipment_incidents_new"/>
+                                <field name="equipment_incidents_open"
+                                       decoration-warning="equipment_incidents_open > 0"/>
+                                <field name="trainings_completed"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Standards &amp; Compliance" name="standards">
+                                <group>
+                                    <field name="standards_summary"
+                                           placeholder="Key compliance observations, curriculum quality issues, child safety notes this week..."/>
+                                </group>
+                            </page>
+                            <page string="Logistics &amp; Operations" name="logistics">
+                                <group>
+                                    <field name="logistics_summary"
+                                           placeholder="Summary of transportation, storage, resource distribution this week..."/>
+                                </group>
+                            </page>
+                            <page string="Highlights &amp; Challenges" name="highlights">
+                                <group>
+                                    <field name="achievements"
+                                           placeholder="Positive highlights and successes this week..."/>
+                                    <field name="challenges"
+                                           placeholder="Challenges, risks, or blockers encountered..."/>
+                                </group>
+                            </page>
+                            <page string="Actions &amp; Escalations" name="actions">
+                                <group>
+                                    <field name="action_items"
+                                           placeholder="Action items planned for next week..."/>
+                                    <field name="escalations"
+                                           placeholder="Matters that need Head of Operation attention..."/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_weekly_report" model="ir.actions.act_window">
+            <field name="name">Weekly Reports</field>
+            <field name="res_model">sfk.weekly.report</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_sfk_weekly_report_pending" model="ir.actions.act_window">
+            <field name="name">Pending Weekly Reports</field>
+            <field name="res_model">sfk.weekly.report</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'in', ('draft', 'submitted'))]</field>
+        </record>
+    </data>
+</odoo>

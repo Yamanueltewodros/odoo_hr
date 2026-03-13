@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sfk_policy_view_list" model="ir.ui.view">
+            <field name="name">sfk.policy.list</field>
+            <field name="model">sfk.policy</field>
+            <field name="arch" type="xml">
+                <list string="Policies &amp; Standards">
+                    <field name="name"/>
+                    <field name="category" widget="badge"/>
+                    <field name="version"/>
+                    <field name="effective_date"/>
+                    <field name="review_due_date"
+                           decoration-danger="review_due_date and review_due_date &lt; context_today()"/>
+                    <field name="owner_id"/>
+                    <field name="revision_count" string="Revisions"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'active'"
+                           decoration-info="state == 'draft'"
+                           decoration-warning="state == 'under_review'"
+                           decoration-muted="state == 'superseded'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sfk_policy_view_form" model="ir.ui.view">
+            <field name="name">sfk.policy.form</field>
+            <field name="model">sfk.policy</field>
+            <field name="arch" type="xml">
+                <form string="SFK Policy / Standards Manual">
+                    <header>
+                        <button name="action_activate" string="Activate"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_review" string="Send for Review"
+                                type="object"
+                                invisible="state != 'active'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_create_revision" string="Create New Revision"
+                                type="object"
+                                invisible="state not in ('active','under_review')"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_supersede" string="Supersede"
+                                type="object"
+                                invisible="state not in ('active','under_review')"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,under_review,active"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Policy Title"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Policy Details">
+                                <field name="category"/>
+                                <field name="version"/>
+                                <field name="owner_id"/>
+                                <field name="company_id"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="effective_date"/>
+                                <field name="review_due_date"/>
+                            </group>
+                        </group>
+                        <group string="Document Reference">
+                            <field name="document_url" placeholder="https://drive.google.com/…"/>
+                        </group>
+                        <notebook>
+                            <page string="Content Summary" name="content">
+                                <field name="description" placeholder="Policy summary or key points…"/>
+                            </page>
+                            <page string="Revision History" name="revisions">
+                                <field name="revision_ids" readonly="1">
+                                    <list>
+                                        <field name="version"/>
+                                        <field name="revision_date"/>
+                                        <field name="revised_by"/>
+                                        <field name="change_reason"/>
+                                        <field name="summary"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Staff Acknowledgments" name="acknowledgments">
+                                <field name="acknowledgment_ids">
+                                    <list editable="bottom">
+                                        <field name="employee_id"/>
+                                        <field name="policy_version" readonly="1"/>
+                                        <field name="acknowledgment_date"/>
+                                        <field name="notes"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_policy" model="ir.actions.act_window">
+            <field name="name">Policies &amp; Standards</field>
+            <field name="res_model">sfk.policy</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_sfk_policy_active" model="ir.actions.act_window">
+            <field name="name">Active Policies</field>
+            <field name="res_model">sfk.policy</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', '=', 'active')]</field>
+        </record>
+    </data>
+</odoo>

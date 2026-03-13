@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_sfk_standards_officer" model="res.groups">
+            <field name="name">Standards Officer</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Can submit compliance checks and view audit/policy records.</field>
+        </record>
+
+        <record id="group_sfk_head_of_standards" model="res.groups">
+            <field name="name">Head of Resources and Standards</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('sfk_operation_standard.group_sfk_standards_officer'))]"/>
+            <field name="comment">Full access to compliance checks, audits, policies, equipment incidents, and staff training.</field>
+        </record>
+    </data>
+</odoo>

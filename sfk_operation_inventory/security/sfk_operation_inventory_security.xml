@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="sfk_inventory_transfer_company_rule" model="ir.rule">
+            <field name="name">Material Transfer Multi-Company</field>
+            <field name="model_id" ref="model_sfk_program_material_transfer"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sfk_inventory_transfer_coordinator_rule" model="ir.rule">
+            <field name="name">Coordinator: Assigned Program Transfers</field>
+            <field name="model_id" ref="model_sfk_program_material_transfer"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_coordinator'))]"/>
+            <field name="domain_force">['|', ('program_id.manager_id', '=', user.id), ('requested_by', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_transfer_supervisor_rule" model="ir.rule">
+            <field name="name">Supervisor: Assigned Program Transfers</field>
+            <field name="model_id" ref="model_sfk_program_material_transfer"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_supervisor'))]"/>
+            <field name="domain_force">['|', ('program_id.supervisor_id', '=', user.id), ('requested_by', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_transfer_location_rule" model="ir.rule">
+            <field name="name">Location Responsible: Own Location Transfers</field>
+            <field name="model_id" ref="model_sfk_program_material_transfer"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_location_responsible'))]"/>
+            <field name="domain_force">['|', ('source_location_id.sfk_responsible_user_id', '=', user.id), ('destination_location_id.sfk_responsible_user_id', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_transfer_manager_rule" model="ir.rule">
+            <field name="name">Operations Manager: All Transfers</field>
+            <field name="model_id" ref="model_sfk_program_material_transfer"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+
+        <record id="sfk_inventory_discrepancy_company_rule" model="ir.rule">
+            <field name="name">Discrepancy Multi-Company</field>
+            <field name="model_id" ref="model_sfk_program_material_discrepancy_report"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sfk_inventory_discrepancy_coordinator_rule" model="ir.rule">
+            <field name="name">Coordinator: Assigned Program Discrepancies</field>
+            <field name="model_id" ref="model_sfk_program_material_discrepancy_report"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_coordinator'))]"/>
+            <field name="domain_force">[('program_id.manager_id', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_discrepancy_supervisor_rule" model="ir.rule">
+            <field name="name">Supervisor: Assigned Program Discrepancies</field>
+            <field name="model_id" ref="model_sfk_program_material_discrepancy_report"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_supervisor'))]"/>
+            <field name="domain_force">[('program_id.supervisor_id', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_discrepancy_location_rule" model="ir.rule">
+            <field name="name">Location Responsible: Own Discrepancies</field>
+            <field name="model_id" ref="model_sfk_program_material_discrepancy_report"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_location_responsible'))]"/>
+            <field name="domain_force">['|', ('transfer_id.source_location_id.sfk_responsible_user_id', '=', user.id), ('transfer_id.destination_location_id.sfk_responsible_user_id', '=', user.id)]</field>
+        </record>
+
+        <record id="sfk_inventory_discrepancy_manager_rule" model="ir.rule">
+            <field name="name">Operations Manager: All Discrepancies</field>
+            <field name="model_id" ref="model_sfk_program_material_discrepancy_report"/>
+            <field name="groups" eval="[(4, ref('sfk_operation.group_sfk_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+
+        <record id="sfk_inventory_location_resp_rule" model="ir.rule">
+            <field name="name">Location Responsible: Own Internal Locations</field>
+            <field name="model_id" ref="stock.model_stock_location"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_location_responsible'))]"/>
+            <field name="domain_force">['|', ('sfk_responsible_user_id', '=', user.id), ('sfk_responsible_user_id', '=', False)]</field>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="sfk_inventory_quant_resp_rule" model="ir.rule">
+            <field name="name">Location Responsible: Own Location Quants</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_location_responsible'))]"/>
+            <field name="domain_force">[('location_id.sfk_responsible_user_id', '=', user.id)]</field>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="sfk_inventory_picking_resp_rule" model="ir.rule">
+            <field name="name">Location Responsible: Own Internal Pickings</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="groups" eval="[(4, ref('sfk_operation_inventory.group_sfk_inventory_location_responsible'))]"/>
+            <field name="domain_force">['|', ('location_id.sfk_responsible_user_id', '=', user.id), ('location_dest_id.sfk_responsible_user_id', '=', user.id)]</field>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ── Corrective Action Plan List ───────────────────────────────── -->
+        <record id="sfk_corrective_action_view_list" model="ir.ui.view">
+            <field name="name">sfk.corrective.action.list</field>
+            <field name="model">sfk.corrective.action</field>
+            <field name="arch" type="xml">
+                <list string="Corrective Action Plans"
+                      decoration-danger="priority == '2' and state not in ('verified',)"
+                      decoration-warning="state == 'completed'">
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="priority" widget="priority"/>
+                    <field name="source" widget="badge"/>
+                    <field name="responsible_id"/>
+                    <field name="due_date"
+                           decoration-danger="due_date and due_date &lt; context_today() and state not in ('verified',)"/>
+                    <field name="company_id"/>
+                    <field name="state" widget="badge"
+                           decoration-danger="state in ('open','overdue')"
+                           decoration-warning="state in ('in_progress','completed')"
+                           decoration-success="state == 'verified'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ── Corrective Action Plan Form ──────────────────────────────── -->
+        <record id="sfk_corrective_action_view_form" model="ir.ui.view">
+            <field name="name">sfk.corrective.action.form</field>
+            <field name="model">sfk.corrective.action</field>
+            <field name="arch" type="xml">
+                <form string="Corrective Action Plan">
+                    <header>
+                        <button name="action_start" string="Start"
+                                type="object" class="btn-primary"
+                                invisible="state != 'open'"
+                                groups="sfk_operation_standard.group_sfk_standards_officer"/>
+                        <button name="action_complete" string="Mark Completed"
+                                type="object" class="btn-primary"
+                                invisible="state != 'in_progress'"
+                                groups="sfk_operation_standard.group_sfk_standards_officer"/>
+                        <button name="action_verify" string="Verify &amp; Close"
+                                type="object" class="btn-success"
+                                invisible="state != 'completed'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_reopen" string="Reopen"
+                                type="object"
+                                invisible="state not in ('completed','overdue')"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="open,in_progress,completed,verified"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="title"/>
+                            <h1><field name="title" placeholder="Issue Title"/></h1>
+                        </div>
+                        <group>
+                            <group string="Details">
+                                <field name="name" readonly="1"/>
+                                <field name="priority" widget="priority"/>
+                                <field name="source"/>
+                                <field name="audit_finding_id"
+                                       invisible="source != 'audit_finding'"/>
+                                <field name="compliance_check_id"
+                                       invisible="source != 'compliance_check'"/>
+                                <field name="equipment_incident_id"
+                                       invisible="source != 'equipment_incident'"/>
+                            </group>
+                            <group string="Ownership">
+                                <field name="responsible_id"/>
+                                <field name="approved_by"/>
+                                <field name="due_date"/>
+                                <field name="company_id"/>
+                                <field name="completion_date" readonly="1"
+                                       invisible="not completion_date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Action Plan" name="plan">
+                                <group>
+                                    <field name="root_cause"
+                                           placeholder="Describe the root cause of this issue..."/>
+                                    <field name="corrective_action"
+                                           placeholder="Describe the corrective action to be taken..."/>
+                                    <field name="preventive_action"
+                                           placeholder="Describe preventive measures to avoid recurrence..."/>
+                                </group>
+                            </page>
+                            <page string="Verification" name="verification"
+                                  invisible="state not in ('completed','verified')">
+                                <group>
+                                    <field name="verification_notes"
+                                           placeholder="Describe how the corrective action was verified..."/>
+                                    <field name="verified_by" readonly="1"/>
+                                    <field name="verified_date" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_corrective_action" model="ir.actions.act_window">
+            <field name="name">Corrective Action Plans</field>
+            <field name="res_model">sfk.corrective.action</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_sfk_corrective_action_open" model="ir.actions.act_window">
+            <field name="name">Open CAPs</field>
+            <field name="res_model">sfk.corrective.action</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'not in', ('verified',))]</field>
+        </record>
+
+        <!-- ── Policy Acknowledgment List ───────────────────────────────── -->
+        <record id="sfk_policy_acknowledgment_view_list" model="ir.ui.view">
+            <field name="name">sfk.policy.acknowledgment.list</field>
+            <field name="model">sfk.policy.acknowledgment</field>
+            <field name="arch" type="xml">
+                <list string="Policy Acknowledgments" editable="bottom">
+                    <field name="employee_id"/>
+                    <field name="policy_version" readonly="1"/>
+                    <field name="acknowledgment_date"/>
+                    <field name="notes"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_sfk_policy_acknowledgment" model="ir.actions.act_window">
+            <field name="name">Policy Acknowledgments</field>
+            <field name="res_model">sfk.policy.acknowledgment</field>
+            <field name="view_mode">list</field>
+        </record>
+    </data>
+</odoo>

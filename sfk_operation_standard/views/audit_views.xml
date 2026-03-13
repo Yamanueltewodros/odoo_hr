@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ── List View ───────────────────────────────────────────────── -->
+        <record id="sfk_audit_view_list" model="ir.ui.view">
+            <field name="name">sfk.audit.list</field>
+            <field name="model">sfk.audit</field>
+            <field name="arch" type="xml">
+                <list string="Audits"
+                      decoration-info="state == 'draft'"
+                      decoration-success="state == 'closed'"
+                      decoration-warning="state == 'submitted'">
+                    <field name="name"/>
+                    <field name="audit_type" widget="badge"/>
+                    <field name="audit_date"/>
+                    <field name="company_id"/>
+                    <field name="lead_auditor_id"/>
+                    <field name="finding_count" string="Findings"/>
+                    <field name="critical_count" string="Critical"
+                           decoration-danger="critical_count > 0"/>
+                    <field name="open_count" string="Open"
+                           decoration-warning="open_count > 0"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'draft'"
+                           decoration-warning="state in ('in_progress','submitted')"
+                           decoration-success="state in ('acknowledged','closed')"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ── Form View ──────────────────────────────────────────────── -->
+        <record id="sfk_audit_view_form" model="ir.ui.view">
+            <field name="name">sfk.audit.form</field>
+            <field name="model">sfk.audit</field>
+            <field name="arch" type="xml">
+                <form string="SFK Audit">
+                    <header>
+                        <button name="action_start" string="Start Audit"
+                                type="object" class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_standards_officer"/>
+                        <button name="action_submit" string="Submit to Head of Operation"
+                                type="object" class="btn-primary"
+                                invisible="state != 'in_progress'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_acknowledge" string="Acknowledge"
+                                type="object" class="btn-success"
+                                invisible="state != 'submitted'"
+                                groups="sfk_operation.group_sfk_manager"/>
+                        <button name="action_close" string="Close Audit"
+                                type="object"
+                                invisible="state != 'acknowledged'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <button name="action_reset_draft" string="Reset to Planning"
+                                type="object"
+                                invisible="state != 'draft'"
+                                groups="sfk_operation_standard.group_sfk_head_of_standards"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,in_progress,submitted,acknowledged,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <div class="oe_stat_button" icon="fa-exclamation-circle">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="critical_count"/>
+                                    </span>
+                                    <span class="o_stat_text">Critical</span>
+                                </div>
+                            </div>
+                            <div class="oe_stat_button" icon="fa-list">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="open_count"/>
+                                        / <field name="finding_count"/>
+                                    </span>
+                                    <span class="o_stat_text">Open Findings</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Audit Details">
+                                <field name="audit_type"/>
+                                <field name="audit_date"/>
+                                <field name="company_id"/>
+                                <field name="lead_auditor_id"/>
+                                <field name="program_ids" widget="many2many_tags"/>
+                            </group>
+                            <group string="Scope">
+                                <field name="scope_workshop_delivery"/>
+                                <field name="scope_facility_readiness"/>
+                                <field name="scope_resource_usage"/>
+                                <field name="scope_staff_practices"/>
+                                <field name="scope_materials"/>
+                                <field name="scope_compliance"/>
+                                <field name="scope_child_safety"/>
+                            </group>
+                        </group>
+                        <group string="Follow-up">
+                            <field name="follow_up_date"/>
+                            <field name="submitted_date" readonly="1"
+                                   invisible="not submitted_date"/>
+                            <field name="closed_date" readonly="1"
+                                   invisible="not closed_date"/>
+                        </group>
+                        <notebook>
+                            <page string="Findings" name="findings">
+                                <field name="finding_ids">
+                                    <list editable="bottom"
+                                          decoration-danger="severity == 'critical'"
+                                          decoration-warning="severity == 'major'">
+                                        <field name="name"/>
+                                        <field name="area"/>
+                                        <field name="severity" widget="badge"
+                                               decoration-danger="severity == 'critical'"
+                                               decoration-warning="severity == 'major'"
+                                               decoration-info="severity == 'minor'"/>
+                                        <field name="responsible_id"/>
+                                        <field name="due_date"/>
+                                        <field name="state" widget="badge"
+                                               decoration-danger="state == 'open'"
+                                               decoration-warning="state == 'in_progress'"
+                                               decoration-success="state in ('resolved','accepted')"/>
+                                        <field name="description" optional="hide"/>
+                                        <field name="recommendation" optional="hide"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Summary &amp; Recommendations" name="summary">
+                                <group>
+                                    <field name="summary" placeholder="Write executive summary…"/>
+                                    <field name="recommendations" placeholder="Recommendations for improvement…"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sfk_audit" model="ir.actions.act_window">
+            <field name="name">All Audits</field>
+            <field name="res_model">sfk.audit</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <record id="action_sfk_audit_open" model="ir.actions.act_window">
+            <field name="name">Open Audits</field>
+            <field name="res_model">sfk.audit</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('state', 'not in', ('closed',))]</field>
+        </record>
+    </data>
+</odoo>

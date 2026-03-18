@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sfk_sale_discount_program_salesman,sfk.sale.discount.program salesman,model_sfk_sale_discount_program,sales_team.group_sale_salesman,1,0,0,0
+access_sfk_sale_discount_program_salesman_all,sfk.sale.discount.program salesman all,model_sfk_sale_discount_program,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_sfk_sale_discount_program_manager,sfk.sale.discount.program manager,model_sfk_sale_discount_program,sales_team.group_sale_manager,1,1,1,1

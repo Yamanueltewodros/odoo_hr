@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sfk_sale_discount_program_tree" model="ir.ui.view">
+        <field name="name">sfk.sale.discount.program.tree</field>
+        <field name="model">sfk.sale.discount.program</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="active"/>
+                <field name="company_id" optional="show"/>
+                <field name="discount_type"/>
+                <field name="value"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="apply_on" optional="show"/>
+                <field name="override_manual_discounts" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_sfk_sale_discount_program_form" model="ir.ui.view">
+        <field name="name">sfk.sale.discount.program.form</field>
+        <field name="model">sfk.sale.discount.program</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Early Bird Discount"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active"/>
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="priority"/>
+                        </group>
+                        <group>
+                            <field name="discount_type"/>
+                            <field name="value"/>
+                            <field name="override_manual_discounts"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Dates">
+                            <group>
+                                <field name="date_start"/>
+                                <field name="date_end"/>
+                            </group>
+                        </page>
+                        <page string="Customers">
+                            <group>
+                                <field name="partner_tag_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Products">
+                            <group>
+                                <field name="apply_on"/>
+                                <field name="product_ids" widget="many2many_tags" invisible="apply_on != 'products'"/>
+                                <field name="product_categ_ids" widget="many2many_tags" invisible="apply_on != 'categories'"/>
+                            </group>
+                        </page>
+                        <page string="Thresholds">
+                            <group>
+                                <field name="min_order_amount"/>
+                                <field name="min_total_qty"/>
+                            </group>
+                        </page>
+                        <page string="Notes">
+                            <field name="note" placeholder="Internal notes / policy..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sfk_sale_discount_program" model="ir.actions.act_window">
+        <field name="name">Discount Programs</field>
+        <field name="res_model">sfk.sale.discount.program</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create discount programs such as Early Bird, Sibling, Scholarship, or Promotions.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_sfk_sale_discount_root"
+              name="Discount Programs"
+              parent="sale.menu_sale_config"
+              action="action_sfk_sale_discount_program"
+              sequence="90"/>
+</odoo>
+

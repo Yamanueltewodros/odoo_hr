@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_inherit_sfk_discount_program" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.sfk.discount.program</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Make it very visible: right after Customer on the order header -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="discount_program_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                <!-- Keep legacy field for compatibility (hidden) -->
+                <field name="discount_program_id" invisible="1"/>
+                <field name="discount_program_message" readonly="1" nolabel="1" class="text-muted"
+                       invisible="not discount_program_ids and not discount_program_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

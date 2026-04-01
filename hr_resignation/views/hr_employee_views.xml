@@ -9,8 +9,8 @@
             <!-- Use 'work_email' instead of 'joining_date' to avoid dependency -->
             <field name="work_email" position="after">
                 <field name="resign_date" readonly="1"/>
-                <field name="resigned" invisible="1"/>
-                <field name="fired" invisible="1"/>
+                <field name="resigned" readonly="1"/>
+                <field name="fired" readonly="1"/>
             </field>
         </field>
     </record>

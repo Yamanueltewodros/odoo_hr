@@ -14,9 +14,9 @@
                     <field name="contract_start_date"/>
                     <field name="expected_revealing_date"/>
                     <field name="approved_revealing_date"
-                           groups="hr_resignation.group_hr_resignation_manager"/>
+                           groups="hr.group_hr_manager"/>
                     <field name="resignation_type"
-                           groups="hr_resignation.group_hr_resignation_manager"/>
+                           groups="hr.group_hr_manager"/>
                     <field name="state"/>
                 </list>
             </field>
@@ -37,16 +37,16 @@
                         invisible="state != 'draft'"/>
                 <button string="Approve" type="object"
                         name="action_approve_resignation"
-                        groups="hr_resignation.group_hr_resignation_manager"
+                        groups="hr.group_hr_manager"
                         invisible="state != 'confirm'"
                         class="btn-primary"/>
                 <button string="Reject" type="object"
                         name="action_cancel_resignation"
-                        groups="hr_resignation.group_hr_resignation_manager"
+                        groups="hr.group_hr_manager"
                         invisible="state != 'confirm'"/>
                 <button string="Set to Draft" type="object"
                         name="action_reset_to_draft"
-                        groups="hr_resignation.group_hr_resignation_manager"
+                        groups="hr.group_hr_manager"
                         invisible="state != 'approved'"/>
                 <field name="state" widget="statusbar"
                        statusbar_visible="draft,confirm,approved"/>
@@ -61,18 +61,18 @@
                     </group>
 
                     <group string="Dates">
-                        <field name="contract_start_date"
-                               readonly="not is_own_record or state != 'draft'"/>
+                        <field name="first_contract_date" readonly="1" visibility="first_contract_date != False"/>
+                        <field name="contract_start_date" readonly="1" visibility="first_contract_date == False"/>
                         <field name="expected_revealing_date"
                                readonly="not is_own_record or state != 'draft'"/>
                         <field name="approved_revealing_date"
                                readonly="1"
-                               groups="hr_resignation.group_hr_resignation_manager"/>
+                               groups="hr.group_hr_manager"/>
                     </group>
 
                     <group string="Resignation Details">
                         <field name="resignation_type"
-                               groups="hr_resignation.group_hr_resignation_manager"/>
+                               groups="hr.group_hr_manager"/>
                         <field name="reason" widget="textarea"
                                readonly="not is_own_record or state != 'draft'"/>
                     </group>
@@ -84,9 +84,10 @@
 </record>
 
         <record id="action_hr_resignation" model="ir.actions.act_window">
-            <field name="name">Employee Resignations</field>
+            <field name="name">My Resignations</field>
             <field name="res_model">hr.resignation</field>
             <field name="view_mode">list,form</field>
+            <field name="domain">[("employee_id.user_id", "=", uid)]</field>
         </record>
 
         <!-- Parent menu: no action, no group = visible to everyone -->

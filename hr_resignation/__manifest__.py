@@ -13,10 +13,11 @@
    'data': [
     'security/groups.xml',
     'security/ir.model.access.csv',
-    'security/record_rules.xml',        # ← add this
+    'security/record_rules.xml',
     'data/ir_sequence_data.xml',
     'views/hr_employee_views.xml',
     'views/hr_resignation_views.xml',
+    'views/hr_resignation_menu_hr_manager.xml',
 ],
     'installable': True,
     'application': True,

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_resignation_acceptance_letter_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="letter_date"
+                   t-value="o.approval_date or o.resign_confirm_date or (o.create_date and o.create_date.date())"/>
+                <t t-set="last_work_date"
+                   t-value="o.approved_revealing_date or o.expected_revealing_date"/>
+                <t t-set="job_title"
+                   t-value="(o.employee_id.job_id and o.employee_id.job_id.name) or ''"/>
+                <t t-set="first_name"
+                   t-value="(o.employee_id.name and o.employee_id.name.split(' ')[0]) or ''"/>
+                <t t-set="company_name"
+                   t-value="(o.employee_id.company_id and o.employee_id.company_id.name) or 'STEM for Kids'"/>
+
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center" style="margin-bottom: 18px;">
+                            Resignation Acceptance letter
+                        </h2>
+
+                        <div class="row" style="margin-bottom: 14px;">
+                            <div class="col-6">
+                                <div><strong>Ref. No</strong>: <span t-esc="o.name"/></div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <div><strong>Date</strong>: <span t-esc="format_date(o.env, letter_date)"/></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            <div t-esc="o.employee_id.name"/>
+                            <div t-esc="job_title"/>
+                            <div t-esc="(o.employee_id.department_id and o.employee_id.department_id.name) or ''"/>
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            <strong>Subject :</strong>Acceptance of Resignation
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            Dear <t t-esc="first_name"/>,
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            This letter serves as formal notification that your resignation from the position of
+                            <t t-esc="job_title"/> has been accepted.
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            As per your employment contract and prevailing labor regulations, your final day of
+                            employment shall be <t t-esc="format_date(o.env, last_work_date)"/>, which corresponds to
+                            the required 30-day notice period from your resignation date.
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            Please be advised that you are required to complete a formal handover of all duties,
+                            tasks, and company property currently in your custody. This includes any property
+                            belonging to <t t-esc="company_name"/> or its stakeholders, which must be returned to your
+                            immediate supervisor or a designated representative.
+                        </div>
+
+                        <div style="margin-bottom: 14px;">
+                            We expect you to maintain your professional standards, including punctuality and
+                            performance, until your employment period is fully completed. Please note that all
+                            outstanding payments and benefits will be disbursed only after you have successfully
+                            completed the formal clearance process. We may also reach out to you during this
+                            transition for necessary clarifications regarding your previous role.
+                        </div>
+
+                        <div style="margin-bottom: 22px;">
+                            We thank you for your contributions to the team and wish you the best in your future
+                            endeavors.
+                        </div>
+
+                        <div style="margin-bottom: 18px;">
+                            Sincerely,<br/>
+                            <t t-esc="user.name"/>
+                        </div>
+
+                        <div style="margin-top: 28px;">
+                            <strong>ACKNOWLEDGMENT:</strong>Employee Name : _________________________________Employee
+                            Signature: _________________ Date: _______________
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

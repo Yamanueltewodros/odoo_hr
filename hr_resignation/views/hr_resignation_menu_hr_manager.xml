@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <!-- HR Manager: All Resignations -->
+        <record id="action_hr_resignation_all" model="ir.actions.act_window">
+            <field name="name">All Resignations</field>
+            <field name="res_model">hr.resignation</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+        <menuitem id="menu_hr_resignation_all"
+                  name="Resignations"
+                  parent="menu_hr_resignation"
+                  action="action_hr_resignation_all"
+                  sequence="20"
+                  groups="hr.group_hr_manager"/>
+        <!-- Employee: My Resignations (already exists) -->
+    </data>
+</odoo>

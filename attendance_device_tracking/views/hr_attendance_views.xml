@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View Extension -->
+    <record id="attendance_device_tracking_view_attendance_tree" model="ir.ui.view">
+        <field name="name">attendance.device.tracking.hr.attendance.list</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="in_mode" string="Check-in Mode" optional="show"/>
+                <field name="out_mode" string="Check-out Mode" optional="show"/>
+                <field name="in_latitude" string="Latitude (In)" optional="hide"/>
+                <field name="in_longitude" string="Longitude (In)" optional="hide"/>
+                <field name="in_location" string="Location (In)" optional="hide"/>
+                <field name="out_latitude" string="Latitude (Out)" optional="hide"/>
+                <field name="out_longitude" string="Longitude (Out)" optional="hide"/>
+                <field name="out_location" string="Location (Out)" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Form View Extension -->
+    <record id="attendance_device_tracking_hr_attendance_view_form" model="ir.ui.view">
+        <field name="name">attendance.device.tracking.hr.attendance.form</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='worked_hours']" position="after">
+                <field name="device_tracking_enabled" invisible="1"/>
+                <separator string="Device Tracking" invisible="not device_tracking_enabled"/>
+                <group invisible="not device_tracking_enabled">
+                    <group string="Check-in Details">
+                        <field name="in_mode" string="Mode"/>
+                        <field name="in_ip_address" invisible="in_mode == 'manual'"/>
+                        <field name="in_browser" invisible="in_mode == 'manual'"/>
+                        <field name="in_location" invisible="in_mode == 'manual'"/>
+                        <field name="in_latitude" invisible="in_mode == 'manual'"/>
+                        <field name="in_longitude" invisible="in_mode == 'manual'"/>
+                        <button
+                            name="action_in_attendance_maps"
+                            type="object"
+                            class="btn btn-link"
+                            icon="fa-map-marker"
+                            string="View Check-in on Maps"
+                            invisible="in_mode == 'manual' or not in_latitude or not in_longitude"/>
+                    </group>
+                    <group string="Check-out Details">
+                        <field name="out_mode" string="Mode"/>
+                        <field name="out_ip_address" invisible="out_mode == 'manual'"/>
+                        <field name="out_browser" invisible="out_mode == 'manual'"/>
+                        <field name="out_location" invisible="out_mode == 'manual'"/>
+                        <field name="out_latitude" invisible="out_mode == 'manual'"/>
+                        <field name="out_longitude" invisible="out_mode == 'manual'"/>
+                        <button
+                            name="action_out_attendance_maps"
+                            type="object"
+                            class="btn btn-link"
+                            icon="fa-map-marker"
+                            string="View Check-out on Maps"
+                            invisible="out_mode == 'manual' or not out_latitude or not out_longitude"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

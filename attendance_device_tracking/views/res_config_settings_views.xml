@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="attendance_device_tracking_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">attendance.device.tracking.res.config.settings.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_attendance.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[field[@name='absence_management']]" position="after">
+                <setting string="Device &amp; Location Tracking" company_dependent="1" help="Allow the collection of GPS location, IP address, and browser/device details used to track employee access and attendance">
+                    <field name="attendance_device_tracking"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
